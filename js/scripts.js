@@ -17,25 +17,26 @@ var groupedNumbers = [];
 //	i =  0, 1, 2
 //
 
-var deleteZeroes = new RegExp("s/0*(\d+)/$1/");
+// var deleteZeroes = new RegExp("s/0*(\d+)/$1/");
 
-var toWords = function(number) {
-	// get rid of any leading zeroes
+
+var toWords = function(numberString) {
 	
-	var num = 
-	console.log(num);
+	
+
+	
 	wordNumbers = [];
 	var groupedNumbers = [];	
 	var suffixes = [];
 	var finalWord = '';
 
-	groupedNumbers = splitByThousands(number);	
+	groupedNumbers = splitByThousands(numberString);	
 	for (var i  = 0; i < groupedNumbers.length; i++) {
 
 		var numDigits = groupedNumbers[i].toString().length;
 
 		// If only units then use units array only
-		if ( numDigits === 1) {
+		if (numDigits === 1) {
 			wordNumbers.push(units[groupedNumbers[i]]);
 		}
 		// If a tens then send to the tens handling function
@@ -47,13 +48,23 @@ var toWords = function(number) {
 			wordNumbers.push(changeHundreds(groupedNumbers[i]));
 		}	
 	}
+
+	
+	// Add appropriate thousand based suffixes to an array
 	for (var j = wordNumbers.length-1; j > 0; j--) {
 		suffixes.push(thousands[j-1]);
 	}
 
+	// If the last set of digits is zero (e.g. 18 000 --> [18, 0]) then pop off the "zero"
+	// Otherwise it outputs "eighteen thousand and zero"
+	if (wordNumbers.length > 1 && wordNumbers[wordNumbers.length-1] === "zero") {
+		wordNumbers.pop();
+	}
+
+	// Stick the final string together from the numbers and suffixes
 	for (var k = 0; k < wordNumbers.length; k++) {
 		if (suffixes[k]) {
-			finalWord += wordNumbers[k] + " " + suffixes[k] + " ";
+			finalWord += wordNumbers[k] + " " + suffixes[k];
 		}
 		else {
 			finalWord += " " + wordNumbers[k];
@@ -68,11 +79,10 @@ var toWords = function(number) {
 // e.g. 9786 = 786 * (10^3)^0 + 9 * (10^3)^1 ---> [9,786]
 var splitByThousands = function(numToSplit) {
 	var splitNumbers = [];
-	var numString = numToSplit.toString();
 	var tempSplit;
 
-	var x = numToSplit;
-	for (var i = numString.length-1; i >= 0; i--) {
+	var x = parseInt(numToSplit, 10);
+	for (var i = numToSplit.length-1; i >= 0; i--) {
 		if(i % 3 === 0) {
 
 			tempSplit = Math.floor(x/Math.pow(10,i));			
